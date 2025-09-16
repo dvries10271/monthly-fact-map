@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Fact Map Assessment</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .progress-container {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 8px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .form-container {
+            padding: 30px;
+        }
+
+        .domain-section {
+            margin-bottom: 40px;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .domain-section.active {
+            display: block;
+        }
+
+        .domain-header {
+            padding: 20px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-align: center;
+            color: white;
+        }
+
+        .domain-body { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+        .domain-being { background: linear-gradient(135deg, #3498db, #2980b9); }
+        .domain-balance { background: linear-gradient(135deg, #2ecc71, #27ae60); }
+        .domain-business { background: linear-gradient(135deg, #f39c12, #d35400); }
+
+        .section-content {
+            padding: 30px;
+        }
+
+        .freedom-bondage-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .fb-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .fb-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .freedom-section h3 {
+            color: #27ae60;
+        }
+
+        .bondage-section h3 {
+            color: #e74c3c;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
+        }
+
+        .form-group textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea.required:invalid {
+            border-color: #e74c3c;
+        }
+
+        .navigation-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-size: 1.1rem;
+            padding: 15px 40px;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .user-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .user-info input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-family: inherit;
+        }
+
+        .user-info input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .completion-message {
+            text-align: center;
+            padding: 40px;
+            display: none;
+        }
+
+        .completion-message.show {
+            display: block;
+        }
+
+        .completion-message h2 {
+            color: #28a745;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .completion-message p {
+            color: #6c757d;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                border-radius: 15px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .header p {
+                font-size: 1rem;
+            }
+
+            .freedom-bondage-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .user-info {
+                grid-template-columns: 1fr;
+            }
+
+            .navigation-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Monthly Fact Map</h1>
+            <p>Ground yourself in the facts of today to build the foundation for freedom tomorrow. Complete this honest assessment of your current reality across all four domains.</p>
+        </div>
+
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-text" id="progressText">Step 1 of 5</div>
+        </div>
+
+        <form id="factMapForm" action="https://n8n-production-3280.up.railway.app/webhook/monthly-fact-map" method="POST">
+            <div class="form-container">
+                <!-- User Information -->
+                <div class="domain-section active" id="section-0">
+                    <div class="domain-header" style="background: linear-gradient(135deg, #2c3e50, #34495e);">
+                        Your Information
+                    </div>
+                    <div class="section-content">
+                        <div class="user-info">
+                            <div class="form-group">
+                                <label for="name">Full Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email Address *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <input type="hidden" name="month_year" id="monthYear">
+                        <input type="hidden" name="submission_date" id="submissionDate">
+                    </div>
+                </div>
+
+                <!-- BODY Domain -->
+                <div class="domain-section" id="section-1">
+                    <div class="domain-header domain-body">
+                        BODY DOMAIN
+                    </div>
+                    <div class="section-content">
+                        <div class="freedom-bondage-container">
+                            <div class="fb-section freedom-section">
+                                <h3>🎯 FREEDOM</h3>
+                                <div class="form-group">
+                                    <label for="body_freedom_fruit">What fruit in your BODY domain shows you are FREE this month?</label>
+                                    <textarea id="body_freedom_fruit" name="body_freedom_fruit" class="required" placeholder="Energy levels, fitness achievements, health improvements, physical strength..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="body_freedom_feeling">How does this BODY freedom make you FEEL?</label>
+                                    <textarea id="body_freedom_feeling" name="body_freedom_feeling" class="required" placeholder="Strong, energetic, confident, capable..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="body_freedom_focus">What FOCUS in BODY produced this freedom?</label>
+                                    <textarea id="body_freedom_focus" name="body_freedom_focus" class="required" placeholder="Consistent workouts, better nutrition, sleep routine..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="fb-section bondage-section">
+                                <h3>⛓️ BONDAGE</h3>
+                                <div class="form-group">
+                                    <label for="body_bondage_areas">Where are you in BONDAGE in BODY this month?</label>
+                                    <textarea id="body_bondage_areas" name="body_bondage_areas" class="required" placeholder="Low energy, poor health, physical pain, lack of fitness..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="body_bondage_feeling">How does this BODY bondage make you FEEL?</label>
+                                    <textarea id="body_bondage_feeling" name="body_bondage_feeling" class="required" placeholder="Tired, weak, frustrated, disappointed..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="body_bondage_cause">What focus or neglect produced this bondage?</label>
+                                    <textarea id="body_bondage_cause" name="body_bondage_cause" class="required" placeholder="Inconsistent exercise, poor diet, stress, lack of sleep..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BEING Domain -->
+                <div class="domain-section" id="section-2">
+                    <div class="domain-header domain-being">
+                        BEING DOMAIN
+                    </div>
+                    <div class="section-content">
+                        <div class="freedom-bondage-container">
+                            <div class="fb-section freedom-section">
+                                <h3>🎯 FREEDOM</h3>
+                                <div class="form-group">
+                                    <label for="being_freedom_fruit">What fruit in your BEING domain shows you are FREE this month?</label>
+                                    <textarea id="being_freedom_fruit" name="being_freedom_fruit" class="required" placeholder="Spiritual growth, clarity, inner peace, purpose alignment..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="being_freedom_feeling">How does this BEING freedom make you FEEL?</label>
+                                    <textarea id="being_freedom_feeling" name="being_freedom_feeling" class="required" placeholder="Peaceful, grounded, purposeful, connected..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="being_freedom_focus">What FOCUS in BEING produced this freedom?</label>
+                                    <textarea id="being_freedom_focus" name="being_freedom_focus" class="required" placeholder="Daily prayer, meditation, study, reflection..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="fb-section bondage-section">
+                                <h3>⛓️ BONDAGE</h3>
+                                <div class="form-group">
+                                    <label for="being_bondage_areas">Where are you in BONDAGE in BEING this month?</label>
+                                    <textarea id="being_bondage_areas" name="being_bondage_areas" class="required" placeholder="Spiritual disconnection, lack of purpose, inner turmoil..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="being_bondage_feeling">How does this BEING bondage make you FEEL?</label>
+                                    <textarea id="being_bondage_feeling" name="being_bondage_feeling" class="required" placeholder="Lost, anxious, disconnected, empty..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="being_bondage_cause">What focus or neglect produced this bondage?</label>
+                                    <textarea id="being_bondage_cause" name="being_bondage_cause" class="required" placeholder="Neglected prayer time, no reflection, disconnected from purpose..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BALANCE Domain -->
+                <div class="domain-section" id="section-3">
+                    <div class="domain-header domain-balance">
+                        BALANCE DOMAIN
+                    </div>
+                    <div class="section-content">
+                        <div class="freedom-bondage-container">
+                            <div class="fb-section freedom-section">
+                                <h3>🎯 FREEDOM</h3>
+                                <div class="form-group">
+                                    <label for="balance_freedom_fruit">What fruit in your BALANCE domain shows you are FREE this month?</label>
+                                    <textarea id="balance_freedom_fruit" name="balance_freedom_fruit" class="required" placeholder="Strong relationships, family time, work-life harmony..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="balance_freedom_feeling">How does this BALANCE freedom make you FEEL?</label>
+                                    <textarea id="balance_freedom_feeling" name="balance_freedom_feeling" class="required" placeholder="Fulfilled, connected, supported, harmonious..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="balance_freedom_focus">What FOCUS in BALANCE produced this freedom?</label>
+                                    <textarea id="balance_freedom_focus" name="balance_freedom_focus" class="required" placeholder="Date nights, family activities, boundaries, time management..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="fb-section bondage-section">
+                                <h3>⛓️ BONDAGE</h3>
+                                <div class="form-group">
+                                    <label for="balance_bondage_areas">Where are you in BONDAGE in BALANCE this month?</label>
+                                    <textarea id="balance_bondage_areas" name="balance_bondage_areas" class="required" placeholder="Relationship strain, work imbalance, family neglect..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="balance_bondage_feeling">How does this BALANCE bondage make you FEEL?</label>
+                                    <textarea id="balance_bondage_feeling" name="balance_bondage_feeling" class="required" placeholder="Guilty, overwhelmed, disconnected, stressed..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="balance_bondage_cause">What focus or neglect produced this bondage?</label>
+                                    <textarea id="balance_bondage_cause" name="balance_bondage_cause" class="required" placeholder="Work obsession, poor boundaries, neglected relationships..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BUSINESS Domain -->
+                <div class="domain-section" id="section-4">
+                    <div class="domain-header domain-business">
+                        BUSINESS DOMAIN
+                    </div>
+                    <div class="section-content">
+                        <div class="freedom-bondage-container">
+                            <div class="fb-section freedom-section">
+                                <h3>🎯 FREEDOM</h3>
+                                <div class="form-group">
+                                    <label for="business_freedom_fruit">What fruit in your BUSINESS domain shows you are FREE this month?</label>
+                                    <textarea id="business_freedom_fruit" name="business_freedom_fruit" class="required" placeholder="Revenue growth, successful projects, client satisfaction..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="business_freedom_feeling">How does this BUSINESS freedom make you FEEL?</label>
+                                    <textarea id="business_freedom_feeling" name="business_freedom_feeling" class="required" placeholder="Accomplished, confident, successful, impactful..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="business_freedom_focus">What FOCUS in BUSINESS produced this freedom?</label>
+                                    <textarea id="business_freedom_focus" name="business_freedom_focus" class="required" placeholder="Strategic planning, execution, client focus, team building..." required></textarea>
+                                </div>
+                            </div>
+                            <div class="fb-section bondage-section">
+                                <h3>⛓️ BONDAGE</h3>
+                                <div class="form-group">
+                                    <label for="business_bondage_areas">Where are you in BONDAGE in BUSINESS this month?</label>
+                                    <textarea id="business_bondage_areas" name="business_bondage_areas" class="required" placeholder="Revenue struggles, failed projects, operational issues..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="business_bondage_feeling">How does this BUSINESS bondage make you FEEL?</label>
+                                    <textarea id="business_bondage_feeling" name="business_bondage_feeling" class="required" placeholder="Frustrated, worried, stuck, overwhelmed..." required></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="business_bondage_cause">What focus or neglect produced this bondage?</label>
+                                    <textarea id="business_bondage_cause" name="business_bondage_cause" class="required" placeholder="Poor planning, lack of focus, operational inefficiency..." required></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navigation-buttons">
+                <button type="button" class="btn btn-secondary" id="prevBtn" onclick="changeSection(-1)" style="display: none;">
+                    ← Previous
+                </button>
+                <div></div>
+                <button type="button" class="btn btn-primary" id="nextBtn" onclick="changeSection(1)">
+                    Next →
+                </button>
+                <button type="submit" class="btn btn-success" id="submitBtn" style="display: none;">
+                    Complete Assessment
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <h3>Processing Your Fact Map...</h3>
+            <p>Analyzing your responses and generating insights...</p>
+        </div>
+
+        <div class="completion-message" id="completionMessage">
+            <h2>🎉 Assessment Complete!</h2>
+            <p>Your Monthly Fact Map has been submitted successfully. You'll receive your personalized insights and analysis via email shortly.</p>
+            <p style="margin-top: 20px;"><strong>Next Step:</strong> Use these insights to guide your goal setting and daily priorities for the upcoming month.</p>
+        </div>
+    </div>
+
+    <script>
+        let currentSection = 0;
+        const totalSections = 5;
+
+        // Initialize form
+        document.addEventListener('DOMContentLoaded', function() {
+            const now = new Date();
+            document.getElementById('monthYear').value = now.toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+            });
+            document.getElementById('submissionDate').value = now.toISOString().split('T')[0];
+            updateProgress();
+        });
+
+        function changeSection(direction) {
+            if (direction === 1 && !validateCurrentSection()) {
+                return;
+            }
+
+            const sections = document.querySelectorAll('.domain-section');
+            sections[currentSection].classList.remove('active');
+            
+            currentSection += direction;
+            
+            if (currentSection >= totalSections) {
+                currentSection = totalSections - 1;
+                return;
+            }
+            
+            if (currentSection < 0) {
+                currentSection = 0;
+                return;
+            }
+
+            sections[currentSection].classList.add('active');
+            updateProgress();
+            updateNavigation();
+            
+            // Scroll to top of form
+            document.querySelector('.container').scrollIntoView({ 
+                behavior: 'smooth' 
+            });
+        }
+
+        function validateCurrentSection() {
+            const currentSectionElement = document.getElementById(`section-${currentSection}`);
+            const requiredFields = currentSectionElement.querySelectorAll('.required');
+            let isValid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#e74c3c';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e9ecef';
+                }
+            });
+
+            if (!isValid) {
+                alert('Please fill in all required fields before continuing.');
+            }
+
+            return isValid;
+        }
+
+        function updateProgress() {
+            const progress = ((currentSection + 1) / totalSections) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Step ${currentSection + 1} of ${totalSections}`;
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            // Show/hide previous button
+            if (currentSection === 0) {
+                prevBtn.style.display = 'none';
+            } else {
+                prevBtn.style.display = 'block';
+            }
+
+            // Show/hide next and submit buttons
+            if (currentSection === totalSections - 1) {
+                nextBtn.style.display = 'none';
+                submitBtn.style.display = 'block';
+            } else {
+                nextBtn.style.display = 'block';
+                submitBtn.style.display = 'none';
+            }
+        }
+
+        // Form submission
+        document.getElementById('factMapForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateCurrentSection()) {
+                return;
+            }
+
+            // Show loading
+            document.querySelector('.form-container').style.display = 'none';
+            document.querySelector('.navigation-buttons').style.display = 'none';
+            document.getElementById('loading').classList.add('show');
+
+            // Prepare form data
+            const formData = new FormData(this);
+            const data = {};
+            
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            // Submit to webhook
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Show success message
+                    document.getElementById('loading').classList.remove('show');
+                    document.getElementById('completionMessage').classList.add('show');
+                } else {
+                    throw new Error('Submission failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('loading').classList.remove('show');
+                alert('There was an error submitting your assessment. Please try again.');
+                document.querySelector('.form-container').style.display = 'block';
+                document.querySelector('.navigation-buttons').style.display = 'flex';
+            });
+        });
+
+        // Auto-resize textareas
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'TEXTAREA') {
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+            }
+        });
+
+        // Initialize navigation
+        updateNavigation();
+    </script>
+</body>
+</html>
