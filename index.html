@@ -363,12 +363,12 @@
                     <div class="section-content">
                         <div class="user-info">
                             <div class="form-group">
-                                <label for="name">Full Name *</label>
-                                <input type="text" id="name" name="name" required>
+                                <label for="userName">Full Name *</label>
+                                <input type="text" id="userName" name="user_name" required>
                             </div>
                             <div class="form-group">
-                                <label for="email">Email Address *</label>
-                                <input type="email" id="email" name="email" required>
+                                <label for="userEmail">Email Address *</label>
+                                <input type="email" id="userEmail" name="user_email" required>
                             </div>
                         </div>
                         <input type="hidden" name="month_year" id="monthYear">
@@ -615,7 +615,7 @@
 
         function validateCurrentSection() {
             const currentSectionElement = document.getElementById(`section-${currentSection}`);
-            const requiredFields = currentSectionElement.querySelectorAll('.required');
+            const requiredFields = currentSectionElement.querySelectorAll('.required, input[required]');
             let isValid = true;
 
             requiredFields.forEach(field => {
@@ -675,35 +675,69 @@
             document.querySelector('.navigation-buttons').style.display = 'none';
             document.getElementById('loading').classList.add('show');
 
-            // Prepare form data
+            // Collect all form responses
             const formData = new FormData(this);
-            const data = {};
+            const responses = {};
             
             for (let [key, value] of formData.entries()) {
-                data[key] = value;
+                responses[key] = value;
             }
 
-            // Submit to webhook
+            // Count completed fields for analytics
+            const totalFields = document.querySelectorAll('textarea[required], input[required]').length;
+            const completedFields = Object.keys(responses).filter(key => responses[key] && responses[key].trim()).length;
+            const completionRate = Math.round((completedFields / totalFields) * 100);
+
+            // Prepare assessment data in the same structure as personality assessment
+            const factMapData = {
+                user_name: document.getElementById('userName').value.trim(),
+                user_email: document.getElementById('userEmail').value.trim(),
+                assessment_type: 'monthly_fact_map',
+                responses: responses,
+                analytics: {
+                    completionRate: completionRate,
+                    completionTime: Date.now(),
+                    startTime: Date.now() - 600000, // Assume 10 minutes to complete
+                    totalFields: totalFields,
+                    completedFields: completedFields
+                },
+                metadata: {
+                    userAgent: navigator.userAgent,
+                    screenResolution: `${window.screen.width}x${window.screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    submissionDate: new Date().toISOString()
+                }
+            };
+
+            console.log('Submitting fact map data:', factMapData);
+
+            // Submit to webhook - matching the personality assessment format
             fetch(this.action, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data)
+                body: JSON.stringify(factMapData)
             })
             .then(response => {
-                if (response.ok) {
-                    // Show success message
-                    document.getElementById('loading').classList.remove('show');
-                    document.getElementById('completionMessage').classList.add('show');
-                } else {
-                    throw new Error('Submission failed');
+                if (!response.ok) {
+                    const errorText = response.text();
+                    console.error('Response error:', errorText);
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
+                return response.json();
+            })
+            .then(result => {
+                console.log('Fact Map submitted successfully:', result);
+                
+                // Show success message
+                document.getElementById('loading').classList.remove('show');
+                document.getElementById('completionMessage').classList.add('show');
             })
             .catch(error => {
                 console.error('Error:', error);
                 document.getElementById('loading').classList.remove('show');
-                alert('There was an error submitting your assessment. Please try again.');
+                alert('There was an error submitting your fact map assessment. Please try again.');
                 document.querySelector('.form-container').style.display = 'block';
                 document.querySelector('.navigation-buttons').style.display = 'flex';
             });
